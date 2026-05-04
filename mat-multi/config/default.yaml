@@ -1,0 +1,89 @@
+data_path:
+  fname:    "/workspace/data/mat-multi-s-3/Training_dataset_alex20.csv"
+
+model:
+  n_embd:   768
+  n_head:   12
+  n_layer:  12
+  dropout:  0.1
+
+training:
+  experiment_name: "exp-multi-s-3"
+  learning_rate:  3e-4
+  warmup_steps:   500
+  batch_size:     16
+  max_epochs:     50
+  property_columns: ["Formation_Energy", "Bulk Modulus (CSV)", "e_form", "band_gap_ind", "space_group", "nsites" , "crystal_system_encoded"]
+
+  selected_properties: ["crystal_system_encoded", "Bulk Modulus (CSV)"] #["e_form", "band_gap_ind"]
+  num_properties: 2
+  special_tokens: ["<num>", "<bulk>"] #<form> <band>
+  slices:         "slices"                                        # slices column name in data
+
+paths:
+  log_dir: "/workspace/data/mat-multi-s-3/logs"
+  checkpoint_dir: "/workspace/data/mat-multi-s-3/checkpoints"
+  checkpoint_path: "/workspace/data/mat-multi-s-3/weights/transformer_property_${training.num_properties}.pth"
+  vocab_and_model: "/workspace/data/mat-multi-s-3/weights/model_info_property_${training.num_properties}.json"
+  resume_from_checkpoint: ""  # set to checkpoint path to resume training, e.g. "/path/to/checkpoints/best.ckpt"
+
+sample:
+  checkpoint_path: ${paths.checkpoint_path}
+  vocab_and_model: ${paths.vocab_and_model}
+  properties: 
+    - [3, 50]
+    # - [-1, 1]
+    # - [-2, 1]
+    # - [-3, 1]
+    # - [-4, 1]
+
+
+    # - [0, 2]
+    # - [-1, 2]
+    # - [-2, 2]
+    # - [-3, 2]
+    # - [-4, 2]
+
+
+    # - [0, 3]
+    # - [-1, 3]
+    # - [-2, 3]
+    # - [-3, 3]
+    # - [-4, 3]
+
+
+    # - [0, 4]
+    # - [-1, 4]
+    # - [-2, 4]
+    # - [-3, 4]
+    # - [-4, 4]
+
+
+  initial_tokens : []                           # with start token use [] 
+  max_new_tokens:   2000
+  number_sequences: 500
+  save_path: "/workspace/data/mat-multi-s-3/sample/generated_with_property[3,50]_new2${training.num_properties}.csv"
+  timeout: 300  # 5 minutes timeout for each property value
+  max_attempts: 10
+  temperature: 1.2   # Higher = more diverse, paper uses 1.2
+  top_p: 0.9         # Nucleus sampling threshold, paper uses 0.9
+
+
+back_to_cif:
+  output_folder: "/workspace/data/mat-multi-s-3/sample/output_structures"
+  file_path: ${sample.save_path}
+  reconstructed: "/workspace/data/mat-multi-s-3/reconstructed_sequences_with_properties_${training.num_properties}.csv"
+  plot_name: "/workspace/data/mat-multi-s-3/conversion_counts_plot_${training.num_properties}.png"
+
+
+proxy_model:
+  model_eform:        "MEGNet-MP-2018.6.1-Eform" 
+  model_band:        "MEGNet-MP-2019.4.1-BandGap-mfi" 
+  csv_path: "/workspace/data/mat-multi-s-3/sample/output_structures/${back_to_cif.reconstructed}"
+  show_count:  True
+  plot_path: "/workspace/data/mat-multi-s-3/sample/output_structures"
+
+hydra:
+  run:
+    dir: .
+

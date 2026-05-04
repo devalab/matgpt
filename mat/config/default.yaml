@@ -1,0 +1,61 @@
+data_path:
+  fname:    "/workspace/data/mat3/bulk_modulus_with_formation.csv"
+
+model:
+  n_embd:   768
+  n_head:   12
+  n_layer:  12
+  dropout:  0.1
+
+training:
+  experiment_name: "exp-bulk"
+  learning_rate:  3e-4
+  warmup_steps:   500
+  batch_size:     16
+  max_epochs:     50
+  property_columns: ["Formation_Energy", "Bulk Modulus (CSV)", "space_group", "nsites"]
+
+  selected_properties: ["Bulk Modulus (CSV)"]
+  num_properties: 1
+  special_tokens: ["<bulk>"] #<form> <band>
+  slices:         "slices"                                        # slices column name in data
+
+paths:
+  log_dir: "/workspace/data/mat3/logs"
+  checkpoint_dir: "/workspace/data/mat3/checkpoints"
+  checkpoint_path: "/workspace/data/mat3/weights/transformer_property_${training.num_properties}.pth"
+  vocab_and_model: "/workspace/data/mat3/weights/model_info_property_${training.num_properties}.json"
+  resume_from_checkpoint: ""  # set to checkpoint path to resume training, e.g. "/path/to/checkpoints/best.ckpt"
+
+sample:
+  checkpoint_path: ${paths.checkpoint_path}
+  vocab_and_model: ${paths.vocab_and_model}
+  properties: [100]
+  initial_tokens : []                           # with start token use [] 
+  max_new_tokens:   2000
+  number_sequences: 500
+  save_path: "/workspace/data/mat3/sample/generated_with_property_[100]_new${training.num_properties}.csv"
+  timeout: 300  # 5 minutes timeout for each property value
+  max_attempts: 10
+  temperature: 1.2   # Higher = more diverse, paper uses 1.2
+  top_p: 0.9         # Nucleus sampling threshold, paper uses 0.9
+
+
+back_to_cif:
+  output_folder: "/workspace/data/mat3/sample/output_structures"
+  file_path: ${sample.save_path}
+  reconstructed: "/workspace/data/mat3/reconstructed_sequences_with_properties_${training.num_properties}.csv"
+  plot_name: "/workspace/data/mat3/conversion_counts_plot_${training.num_properties}.png"
+
+
+proxy_model:
+  model_eform:        "MEGNet-MP-2018.6.1-Eform" 
+  model_band:        "MEGNet-MP-2019.4.1-BandGap-mfi" 
+  csv_path: "/workspace/data/mat3/sample/output_structures/${back_to_cif.reconstructed}"
+  show_count:  True
+  plot_path: "/workspace/data/mat3/sample/output_structures"
+
+hydra:
+  run:
+    dir: .
+
