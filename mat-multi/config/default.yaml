@@ -1,5 +1,5 @@
 data_path:
-  fname:    "/workspace/data/mat-multi-s-3/Training_dataset_alex20.csv"
+  fname:    "./dataset/bulk_modulus_with_formation_crystal_system.csv"
 
 model:
   n_embd:   768
@@ -21,10 +21,10 @@ training:
   slices:         "slices"                                        # slices column name in data
 
 paths:
-  log_dir: "/workspace/data/mat-multi-s-3/logs"
-  checkpoint_dir: "/workspace/data/mat-multi-s-3/checkpoints"
-  checkpoint_path: "/workspace/data/mat-multi-s-3/weights/transformer_property_${training.num_properties}.pth"
-  vocab_and_model: "/workspace/data/mat-multi-s-3/weights/model_info_property_${training.num_properties}.json"
+  log_dir: "./logs"
+  checkpoint_dir: "./checkpoints"
+  checkpoint_path: "./weights/transformer_property_${training.num_properties}.pth"
+  vocab_and_model: "./weights/model_info_property_${training.num_properties}.json"
   resume_from_checkpoint: ""  # set to checkpoint path to resume training, e.g. "/path/to/checkpoints/best.ckpt"
 
 sample:
@@ -62,7 +62,7 @@ sample:
   initial_tokens : []                           # with start token use [] 
   max_new_tokens:   2000
   number_sequences: 500
-  save_path: "/workspace/data/mat-multi-s-3/sample/generated_with_property[3,50]_new2${training.num_properties}.csv"
+  save_path: "./sample/generated_with_property_${training.num_properties}.csv"
   timeout: 300  # 5 minutes timeout for each property value
   max_attempts: 10
   temperature: 1.2   # Higher = more diverse, paper uses 1.2
@@ -70,20 +70,20 @@ sample:
 
 
 back_to_cif:
-  output_folder: "/workspace/data/mat-multi-s-3/sample/output_structures"
+  output_folder: "./sample/output_structures"
   file_path: ${sample.save_path}
-  reconstructed: "/workspace/data/mat-multi-s-3/reconstructed_sequences_with_properties_${training.num_properties}.csv"
-  plot_name: "/workspace/data/mat-multi-s-3/conversion_counts_plot_${training.num_properties}.png"
+  reconstructed: "reconstructed_sequences_with_properties_${training.num_properties}.csv"
+  plot_name: "conversion_counts_plot_${training.num_properties}.png"
 
 
 proxy_model:
+  model_bulk_modulus: "logK_MP_2019"
   model_eform:        "MEGNet-MP-2018.6.1-Eform" 
   model_band:        "MEGNet-MP-2019.4.1-BandGap-mfi" 
-  csv_path: "/workspace/data/mat-multi-s-3/sample/output_structures/${back_to_cif.reconstructed}"
+  csv_path: "./sample/output_structures/${back_to_cif.reconstructed}"
   show_count:  True
-  plot_path: "/workspace/data/mat-multi-s-3/sample/output_structures"
+  plot_path: "./sample/output_structures"
 
 hydra:
   run:
     dir: .
-

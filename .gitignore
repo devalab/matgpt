@@ -1,0 +1,35 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# Training outputs
+logs/
+checkpoints/
+sample/
+**/logs/
+**/checkpoints/
+**/sample/
+**/output_structures/
+
+# Large local artifacts. Keep the folder structure, but do not commit data or weights.
+mat/dataset/*
+mat/weights/*
+mat-multi/dataset/*
+mat-multi/weights/*
+!mat/dataset/.gitkeep
+!mat/weights/.gitkeep
+!mat-multi/dataset/.gitkeep
+!mat-multi/weights/.gitkeep
+
+# Common model/checkpoint formats
+*.ckpt
+*.pth
+*.pt
+*.pkl
+*.h5
+
+# Generated scientific structures and tables
+*.cif
+reconstructed_sequences_with_properties_*.csv
+conversion_counts_plot_*.png
