@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use MatGPT, please cite the software and the associated manuscript using the metadata below."
+title: "MatGPT: Transformer-Based Generation of Inorganic Materials with Targeted Properties"
+type: software
+version: 0.1.0
+license: MIT
+authors:
+  - name: "Harsha Satya Vardhan Vasamsetti"
+    affiliation: "International Institute of Information Technology Hyderabad"
+  - name: "Pradeep Kumar Pal"
+    affiliation: "International Institute of Information Technology Hyderabad"
+  - name: "Masahiro Ehara"
+    affiliation: "Institute for Molecular Science"
+  - name: "U. Deva Priyakumar"
+    affiliation: "International Institute of Information Technology Hyderabad"
+repository-code: "https://github.com/devalab/matgpt"
+preferred-citation:
+  type: article
+  title: "MatGPT: Transformer-Based Generation of Inorganic Materials with Targeted Properties"
+  authors:
+    - name: "Harsha Satya Vardhan Vasamsetti"
+    - name: "Pradeep Kumar Pal"
+    - name: "Masahiro Ehara"
+    - name: "U. Deva Priyakumar"
+  year: 2026

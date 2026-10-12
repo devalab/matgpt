@@ -1,0 +1,23 @@
+__pycache__/
+*.py[cod]
+.DS_Store
+.ipynb_checkpoints/
+.hydra/
+.conda-env/
+*.log
+
+# run outputs (written to outputs/<experiment>/ inside each folder)
+outputs/
+lightning_logs/
+multirun/
+
+# data and weights are distributed separately
+**/dataset/*
+!**/dataset/.gitkeep
+**/weights/*
+!**/weights/.gitkeep
+*.ckpt
+*.pth
+*.pt
+*.h5
+*.cif

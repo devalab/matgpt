@@ -1,0 +1,76 @@
+# Multi-property generation: crystal system + band gap (Table 7, Fig. 12)
+# Run any script with this file:  python <script>.py --config-name cs_band
+# Order: train.py -> sample_property.py -> sli_to_cif.py -> crystal_band.py -> metrics.py
+# crystal_system_encoded: 1 Triclinic, 2 Monoclinic, 3 Orthorhombic, 4 Tetragonal, 5 Trigonal, 6 Hexagonal, 7 Cubic
+
+data_path:
+  fname: "./dataset/Training_dataset_alex20_with_encoding.csv"
+
+model:
+  n_embd: 768
+  n_head: 12
+  n_layer: 12
+  dropout: 0.1
+
+training:
+  experiment_name: "cs_band"
+  learning_rate: 3e-4
+  warmup_steps: 500
+  batch_size: 16
+  max_epochs: 50
+  seed: null                       # the paper's runs were not seeded; set an integer for repeatable new runs
+  selected_properties: ["crystal_system_encoded", "band_gap_ind"]   # 1-7, eV
+  num_properties: 2
+  special_tokens: ["<num>", "<band>"]
+  slices: "SLICES"                 # SLICES column in the training CSV
+
+paths:
+  out_root: "./outputs/${training.experiment_name}"
+  log_dir: "${paths.out_root}/logs"
+  checkpoint_dir: "${paths.out_root}/checkpoints"
+  checkpoint_path: "${paths.out_root}/weights/transformer_property_${training.num_properties}.pth"
+  vocab_and_model: "${paths.out_root}/weights/model_info_property_${training.num_properties}.json"
+  resume_from_checkpoint: ""       # path to a Lightning .ckpt to resume training
+
+sample:
+  checkpoint_path: ${paths.checkpoint_path}
+  vocab_and_model: ${paths.vocab_and_model}
+  properties:                      # [crystal system, band gap (eV)]
+    - [1, 2.0]
+    - [5, 2.0]
+    - [7, 2.0]
+  initial_tokens: []
+  max_new_tokens: 2000
+  number_sequences: 500            # samples per target pair
+  max_attempts: 10                 # attempts per sample until the SLICES check and reconstruction pass
+  timeout: 300                     # seconds per sample (checked between attempts)
+  temperature: 1.2
+  top_p: 0.9
+  seed: null                       # the paper's runs were not seeded
+  save_path: "${paths.out_root}/sample/generated_with_property_${training.num_properties}.csv"
+
+back_to_cif:
+  output_folder: "${paths.out_root}/sample/output_structures"
+  file_path: ${sample.save_path}
+  reconstructed: "reconstructed_sequences_with_properties_${training.num_properties}.csv"
+  plot_name: "conversion_counts_plot_${training.num_properties}.png"
+
+proxy_model:
+  model_bulk_modulus: "logK_MP_2019"
+  model_eform: "MEGNet-MP-2018.6.1-Eform"
+  model_band: "MEGNet-MP-2019.4.1-BandGap-mfi"
+  csv_path: "${back_to_cif.output_folder}/${back_to_cif.reconstructed}"
+  training_cifs: ${data_path.fname}             # novelty is checked against the training set itself
+  training_cif_column: "CIF"                   # column with the CIF text
+  show_count: True
+  plot_path: "${back_to_cif.output_folder}"
+
+metrics:
+  prediction_columns: ["Actual_Crystal_System", "Predicted_PBE"]   # one per selected property
+  hit_tolerances: [null, 0.5]       # crystal system uses the match rate
+  novelty_relative_to: "requested"   # as stated in the table caption
+  output_csv: "${paths.out_root}/metrics.csv"
+
+hydra:
+  run:
+    dir: .
