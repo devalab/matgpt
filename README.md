@@ -28,7 +28,7 @@ Versions are pinned in `requirements.txt` (SLICES 2.0.4, PyTorch 2.2.1, PyTorch 
 
 ## Data and trained models
 
-Datasets and trained models: [figshare](https://doi.org/10.6084/m9.figshare.34330655)
+Datasets and trained models: [figshare](10.6084/m9.figshare.34330655)
 
 - Formation energy and band gap: Alex-20 from MatterGPT (Dataset for MatterGPT v1, [10.5281/zenodo.16879675](https://doi.org/10.5281/zenodo.16879675)). The training file with the added crystal system label, `Training_dataset_alex20_with_encoding.csv`, is on figshare.
 - Bulk modulus: `bulk_modulus_with_formation.csv`, 12,532 Materials Project compounds with their Materials Project IDs.
